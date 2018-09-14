@@ -52,17 +52,27 @@ if not package.loaded['Util'] then
         return (next(tab) == nil)
     end
 
-    -- Mash together two tables
-    table.join = function(tab1, tab2)
-        local out = {}
-        for k=1,#tab1 do
-            out[k] = tab1[k]
+    -- Mash several tables together
+    table.join = function(...)
+        local joined = {}
+        local args = {...}
+
+        for _, t in ipairs(args) do
+            local contiguous = false
+
+            for _, v in ipairs(t) do
+                contiguous = true
+                table.insert(joined, v)
+            end
+
+            if not contiguous then
+                for k, v in pairs(t) do
+                    joined[k] = v
+                end
+            end
         end
-        local off = #tab1
-        for k=1,#tab2 do
-            out[k+off] = tab2[k]
-        end
-        return out
+
+        return joined
     end
 
     -- Shallow table copy
